@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Uhrzeit in Worten – Selbsttest (2./3. Klasse)</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .app {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 2rem 2.5rem;
+      max-width: 560px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 1.6rem;
+    }
+    .subtitle {
+      text-align: center;
+      color: #4b5563;
+      margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+    }
+    .center {
+      text-align: center;
+    }
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin: 1rem 0 0.5rem;
+    }
+    .choice-btn {
+      padding: 0.9rem 0.6rem;
+      border-radius: 16px;
+      border: 2px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .choice-btn.selected {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 5px 15px rgba(37,99,235,0.35);
+    }
+    .choice-btn:active {
+      transform: translateY(1px);
+    }
+    .selected-info {
+      font-size: 0.85rem;
+      color: #6b7280;
+      text-align: center;
+      min-height: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .equation {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin: 0.5rem 0;
+      text-align: center;
+    }
+    .progress {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .primary-btn {
+      margin-top: 0.9rem;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      font-size: 1.1rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.2s ease;
+    }
+    .primary-btn:hover {
+      background: #1d4ed8;
+    }
+    .primary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .primary-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .secondary-btn {
+      margin-top: 0.4rem;
+      width: 100%;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #111827;
+      font-weight: 500;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .secondary-btn:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+    }
+    .secondary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .feedback {
+      min-height: 1.4rem;
+      margin-top: 0.4rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    .feedback.ok {
+      color: #15803d;
+    }
+    .feedback.error {
+      color: #b91c1c;
+    }
+    .hidden {
+      display: none;
+    }
+    .stats {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 0.1rem 0.6rem;
+      font-size: 0.8rem;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-top: 0.3rem;
+    }
+    .options-grid {
+      margin-top: 0.8rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+    .option-btn {
+      padding: 0.6rem 0.6rem;
+      border-radius: 14px;
+      border: 2px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s ease, transform 0.05s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      word-wrap: break-word;
+    }
+    .option-btn:hover {
+      background: #e5e7eb;
+    }
+    .option-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .clock-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    #clock-canvas {
+      background: #f9fafb;
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Wie spät ist es?</h1>
+  <div class="subtitle">
+    Wähle deine Klasse (2./3.) und die Schwierigkeit.<br>
+    Schau die Uhr an und klicke die richtige Uhrzeit in Worten an.
+  </div>
+
+  <!-- Start-Bereich -->
+  <div id="start-screen">
+    <div class="center">
+      <p>Bitte eine <strong>Klasse</strong> und eine <strong>Schwierigkeit</strong> auswählen.</p>
+    </div>
+
+    <div class="center" style="margin-top:0.5rem;">Klasse</div>
+    <div class="choice-grid" id="grade-grid">
+      <button type="button" class="choice-btn grade-btn" data-grade="1">2. Klasse</button>
+      <button type="button" class="choice-btn grade-btn" data-grade="2">3. Klasse</button>
+    </div>
+
+    <div class="center" style="margin-top:1rem;">Schwierigkeit</div>
+    <div class="choice-grid" id="difficulty-grid">
+      <button type="button" class="choice-btn difficulty-btn" data-diff="easy">einfach</button>
+      <button type="button" class="choice-btn difficulty-btn" data-diff="hard">schwierig</button>
+    </div>
+
+    <div class="selected-info" id="selected-info"></div>
+
+    <button class="primary-btn" id="start-btn" disabled>Los!</button>
+  </div>
+
+  <!-- Quiz-Bereich -->
+  <div id="quiz-screen" class="hidden">
+    <div class="progress" id="progress-text"></div>
+    <div class="center">
+      <div class="tag" id="variant-label"></div>
+      <div class="equation" id="equation-text">Wie spät ist es?</div>
+    </div>
+
+    <div class="clock-wrapper">
+      <canvas id="clock-canvas" width="220" height="220"></canvas>
+    </div>
+
+    <div id="options-container" class="options-grid"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="stats">
+      Richtig: <span id="stat-correct">0</span> / <span id="stat-total">30</span><br>
+      Falsche Versuche: <span id="stat-wrong">0</span><br>
+      Modus: <span id="stat-mode"></span>
+    </div>
+  </div>
+
+  <!-- Ergebnis-Bereich -->
+  <div id="result-screen" class="hidden center">
+    <h2>Fertig! 🎉</h2>
+    <p id="result-summary"></p>
+    <p style="margin-top:0.8rem; font-size:0.9rem; color:#4b5563;">
+      Wenn du mit deinem Ergebnis zufrieden bist,<br>
+      klicke auf <strong>„Fertig“</strong>, damit LearningView den Auftrag als erledigt markiert.<br>
+      Oder klicke auf <strong>„Weiter üben“</strong>, um zur Auswahl zurückzukehren.
+    </p>
+    <button class="primary-btn" id="finish-btn">Fertig</button>
+    <button class="secondary-btn" id="restart-btn">Weiter üben</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL_QUESTIONS = 30;
+
+  // '1' = 2. Klasse, '2' = 3. Klasse
+  const GRADE_LABELS = {
+    '1': '2. Klasse',
+    '2': '3. Klasse'
+  };
+
+  const DIFF_LABELS = {
+    easy: 'einfach',
+    hard: 'schwierig'
+  };
+
+  let selectedGrade = null;       // '1' | '2'
+  let selectedDifficulty = null;  // 'easy' | 'hard'
+
+  let questionsDone = 0;
+  let correctAnswers = 0;
+  let wrongAnswers = 0;
+  let usedQuestions = [];         // z.B. "h-m-grade-diff"
+
+  let currentQuestion = null;     // {hour, minute, label, correctText, options[]}
+
+  // DOM-Referenzen
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const resultScreen = document.getElementById('result-screen');
+
+  const gradeGrid = document.getElementById('grade-grid');
+  const difficultyGrid = document.getElementById('difficulty-grid');
+  const selectedInfo = document.getElementById('selected-info');
+  const startBtn = document.getElementById('start-btn');
+
+  const progressText = document.getElementById('progress-text');
+  const variantLabel = document.getElementById('variant-label');
+  const optionsContainer = document.getElementById('options-container');
+  const feedback = document.getElementById('feedback');
+  const statCorrect = document.getElementById('stat-correct');
+  const statTotal = document.getElementById('stat-total');
+  const statWrong = document.getElementById('stat-wrong');
+  const statMode = document.getElementById('stat-mode');
+
+  const restartBtn = document.getElementById('restart-btn');
+  const finishBtn = document.getElementById('finish-btn');
+  const resultSummary = document.getElementById('result-summary');
+
+  const clockCanvas = document.getElementById('clock-canvas');
+  const clockCtx = clockCanvas.getContext('2d');
+
+  // Klasse auswählen
+  gradeGrid.querySelectorAll('.grade-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const grade = btn.getAttribute('data-grade');
+      if (selectedGrade === grade) {
+        selectedGrade = null;
+      } else {
+        selectedGrade = grade;
+      }
+
+      gradeGrid.querySelectorAll('.grade-btn').forEach(b => {
+        if (b.getAttribute('data-grade') === selectedGrade) {
+          b.classList.add('selected');
+        } else {
+          b.classList.remove('selected');
+        }
+      });
+
+      updateStartControls();
+    });
+  });
+
+  // Schwierigkeit auswählen
+  difficultyGrid.querySelectorAll('.difficulty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const diff = btn.getAttribute('data-diff');
+      if (selectedDifficulty === diff) {
+        selectedDifficulty = null;
+      } else {
+        selectedDifficulty = diff;
+      }
+
+      difficultyGrid.querySelectorAll('.difficulty-btn').forEach(b => {
+        if (b.getAttribute('data-diff') === selectedDifficulty) {
+          b.classList.add('selected');
+        } else {
+          b.classList.remove('selected');
+        }
+      });
+
+      updateStartControls();
+    });
+  });
+
+  function updateStartControls() {
+    if (!selectedGrade && !selectedDifficulty) {
+      selectedInfo.textContent = 'Keine Klasse und Schwierigkeit ausgewählt.';
+      startBtn.disabled = true;
+      return;
+    }
+    if (!selectedGrade) {
+      selectedInfo.textContent = 'Bitte eine Klasse auswählen.';
+      startBtn.disabled = true;
+      return;
+    }
+    if (!selectedDifficulty) {
+      selectedInfo.textContent = 'Bitte eine Schwierigkeit auswählen.';
+      startBtn.disabled = true;
+      return;
+    }
+    selectedInfo.textContent =
+      'Ausgewählt: ' + GRADE_LABELS[selectedGrade] + ', ' +
+      (selectedDifficulty === 'easy' ? 'einfach' : 'schwierig');
+    startBtn.disabled = false;
+  }
+
+  startBtn.addEventListener('click', startTraining);
+
+  restartBtn.addEventListener('click', () => {
+    quizScreen.classList.add('hidden');
+    resultScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+  });
+
+  finishBtn.addEventListener('click', () => {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage('AppSolved', '*');
+      }
+    } catch (e) {
+      console.warn('postMessage AppSolved nicht möglich:', e);
+    }
+  });
+
+  function startTraining() {
+    if (!selectedGrade || !selectedDifficulty) return;
+
+    questionsDone = 0;
+    correctAnswers = 0;
+    wrongAnswers = 0;
+    usedQuestions = [];
+
+    statCorrect.textContent = '0';
+    statTotal.textContent = TOTAL_QUESTIONS.toString();
+    statWrong.textContent = '0';
+    statMode.textContent =
+      GRADE_LABELS[selectedGrade] + ' – ' + DIFF_LABELS[selectedDifficulty];
+
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+
+    startScreen.classList.add('hidden');
+    resultScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+
+    newQuestion();
+  }
+
+  function newQuestion() {
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+
+    const isLowerLevel = (selectedGrade === '1'); // 2. Klasse
+    const optionsCount = isLowerLevel ? 4 : 8;
+
+    let q;
+    let tries = 0;
+
+    while (true) {
+      q = generateTimeQuestion(selectedGrade, selectedDifficulty);
+      const key = `${q.hour}-${q.minute}-${selectedGrade}-${selectedDifficulty}`;
+      if (!usedQuestions.includes(key)) {
+        usedQuestions.push(key);
+        break;
+      }
+      tries++;
+      if (tries > 300) break; // Notfall: Doppel zulassen
+    }
+
+    currentQuestion = q;
+
+    variantLabel.textContent = q.label;
+    drawClock(q.hour, q.minute);
+
+    const options = generateTimeOptions(q, optionsCount);
+    currentQuestion.options = options;
+
+    renderOptions(options);
+
+    progressText.textContent =
+      `Aufgabe ${questionsDone + 1} von ${TOTAL_QUESTIONS}`;
+  }
+
+  function renderOptions(options) {
+    optionsContainer.innerHTML = '';
+    options.forEach(text => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-btn';
+      btn.textContent = text;
+      btn.addEventListener('click', () => handleAnswer(text));
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(selectedText) {
+    if (!currentQuestion) return;
+
+    if (selectedText === currentQuestion.correctText) {
+      correctAnswers++;
+      statCorrect.textContent = correctAnswers.toString();
+      feedback.textContent = 'Richtig! 👍';
+      feedback.className = 'feedback ok';
+    } else {
+      wrongAnswers++;
+      statWrong.textContent = wrongAnswers.toString();
+      feedback.textContent =
+        'Leider falsch. Die richtige Zeit war: ' + currentQuestion.correctText;
+      feedback.className = 'feedback error';
+    }
+
+    questionsDone++;
+    if (questionsDone >= TOTAL_QUESTIONS) {
+      setTimeout(endTraining, 700);
+    } else {
+      setTimeout(newQuestion, 700);
+    }
+  }
+
+  function endTraining() {
+    quizScreen.classList.add('hidden');
+    resultScreen.classList.remove('hidden');
+
+    const quote = (correctAnswers / TOTAL_QUESTIONS * 100).toFixed(0);
+    const modeText =
+      GRADE_LABELS[selectedGrade] + ', ' +
+      (selectedDifficulty === 'easy' ? 'einfach' : 'schwierig');
+
+    resultSummary.innerHTML =
+      `Du hast <strong>${TOTAL_QUESTIONS}</strong> Uhrzeiten im Modus <strong>${modeText}</strong> gelöst.<br>` +
+      `Davon waren <strong>${correctAnswers}</strong> richtig ` +
+      `(<strong>${quote}%</strong>).<br>` +
+      `Du hattest insgesamt <strong>${wrongAnswers}</strong> falsche Versuche.`;
+  }
+
+  // --- Zeit-Aufgabengenerator (5-Min-Schritte) ---
+  function generateTimeQuestion(grade, difficulty) {
+    let hour, minute, label;
+
+    if (grade === '1') {
+      // 2. Klasse
+      if (difficulty === 'easy') {
+        // ganze und halbe Stunden
+        hour = randomInt(1, 12);
+        minute = Math.random() < 0.5 ? 0 : 30;
+        label = 'Volle und halbe Stunden';
+      } else {
+        // Viertelstunden und 10-Minuten-Schritte
+        const minuteChoices = [0, 10, 15, 20, 30, 40, 45, 50];
+        hour = randomInt(1, 12);
+        minute = minuteChoices[randomInt(0, minuteChoices.length - 1)];
+        label = 'Viertelstunden und 10-Minuten-Schritte';
+      }
+    } else {
+      // 3. Klasse
+      if (difficulty === 'easy') {
+        // 5-Minuten-Schritte
+        hour = randomInt(1, 12);
+        minute = randomIntStep(0, 55, 5);
+        label = '5-Minuten-Schritte';
+      } else {
+        // 5-Minuten-Schritte, „schwieriger Mix“
+        hour = randomInt(1, 12);
+        minute = randomIntStep(0, 55, 5);
+        label = '5-Minuten-Schritte (schwieriger)';
+      }
+    }
+
+    const correctText = timeToText(hour, minute);
+    return { hour, minute, label, correctText };
+  }
+
+  function generateTimeOptions(question, count) {
+    const options = [question.correctText];
+
+    while (options.length < count) {
+      const t = randomTimeForOptions(selectedGrade, selectedDifficulty);
+      // gleiche Regeln wie bei Aufgaben
+      const text = timeToText(t.h, t.m);
+      if (text === question.correctText) continue;
+      if (options.includes(text)) continue;
+      options.push(text);
+    }
+
+    // mischen
+    for (let i = options.length - 1; i > 0; i--) {
+      const j = randomInt(0, i);
+      [options[i], options[j]] = [options[j], options[i]];
+    }
+    return options;
+  }
+
+  function randomTimeForOptions(grade, difficulty) {
+    let hour, minute;
+
+    if (grade === '1') {
+      if (difficulty === 'easy') {
+        hour = randomInt(1, 12);
+        minute = Math.random() < 0.5 ? 0 : 30;
+      } else {
+        const minuteChoices = [0, 10, 15, 20, 30, 40, 45, 50];
+        hour = randomInt(1, 12);
+        minute = minuteChoices[randomInt(0, minuteChoices.length - 1)];
+      }
+    } else {
+      // 3. Klasse
+      hour = randomInt(1, 12);
+      minute = randomIntStep(0, 55, 5);
+    }
+
+    return { h: hour, m: minute };
+  }
+
+  // --- Analoge Uhr zeichnen ---
+  function drawClock(hour, minute) {
+    const ctx = clockCtx;
+    const w = clockCanvas.width;
+    const h = clockCanvas.height;
+    const radius = Math.min(w, h) / 2 - 10;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // Ziffernblatt
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#111827';
+    ctx.stroke();
+
+    // Stundenstriche
+    for (let i = 0; i < 12; i++) {
+      const angle = (Math.PI / 6) * i - Math.PI / 2;
+      const inner = radius - 10;
+      const outer = radius - (i % 3 === 0 ? 18 : 14);
+      ctx.beginPath();
+      ctx.moveTo(inner * Math.cos(angle), inner * Math.sin(angle));
+      ctx.lineTo(outer * Math.cos(angle), outer * Math.sin(angle));
+      ctx.lineWidth = (i % 3 === 0) ? 3 : 1.5;
+      ctx.strokeStyle = '#111827';
+      ctx.stroke();
+    }
+
+    // Mittelpunkt
+    ctx.beginPath();
+    ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#111827';
+    ctx.fill();
+
+    // Minutenzeiger
+    const minuteAngle = (Math.PI / 30) * minute - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo((radius - 22) * Math.cos(minuteAngle), (radius - 22) * Math.sin(minuteAngle));
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#1f2937';
+    ctx.stroke();
+
+    // Stundenzeiger
+    const hourIn12 = hour % 12;
+    const hourAngle = (Math.PI / 6) * (hourIn12 + minute / 60) - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo((radius - 45) * Math.cos(hourAngle), (radius - 45) * Math.sin(hourAngle));
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#111827';
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  // --- Zeit in Text umwandeln ---
+  function timeToText(hour, minute) {
+    const h = ((hour - 1) % 12) + 1; // 1..12
+    const nextH = (h % 12) + 1;
+
+    const hourWord = hourToWord(h);
+    const nextHourWord = hourToWord(nextH);
+    let phrase = '';
+
+    switch (minute) {
+      case 0:
+        phrase = `${hourWord} uhr`;
+        break;
+      case 5:
+        phrase = `fünf nach ${hourWord}`;
+        break;
+      case 10:
+        phrase = `zehn nach ${hourWord}`;
+        break;
+      case 15:
+        phrase = `viertel nach ${hourWord}`;
+        break;
+      case 20:
+        phrase = `zwanzig nach ${hourWord}`;
+        break;
+      case 25:
+        phrase = `fünf vor halb ${nextHourWord}`;
+        break;
+      case 30:
+        phrase = `halb ${nextHourWord}`;
+        break;
+      case 35:
+        phrase = `fünf nach halb ${nextHourWord}`;
+        break;
+      case 40:
+        phrase = `zwanzig vor ${nextHourWord}`;
+        break;
+      case 45:
+        phrase = `viertel vor ${nextHourWord}`;
+        break;
+      case 50:
+        phrase = `zehn vor ${nextHourWord}`;
+        break;
+      case 55:
+        phrase = `fünf vor ${nextHourWord}`;
+        break;
+      default:
+        // sollte kaum vorkommen, Sicherheitsfallback:
+        phrase = `${hourWord} uhr`;
+        break;
+    }
+
+    // ersten Buchstaben groß
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+  }
+
+  function hourToWord(h) {
+    const words = {
+      1: 'eins',
+      2: 'zwei',
+      3: 'drei',
+      4: 'vier',
+      5: 'fünf',
+      6: 'sechs',
+      7: 'sieben',
+      8: 'acht',
+      9: 'neun',
+      10: 'zehn',
+      11: 'elf',
+      12: 'zwölf'
+    };
+    return words[h] || h.toString();
+  }
+
+  // --- Hilfsfunktionen ---
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function randomIntStep(min, max, step) {
+    if (max < min) return min;
+    const count = Math.floor((max - min) / step) + 1;
+    const idx = randomInt(0, count - 1);
+    return min + idx * step;
+  }
+
+  // Initial
+  (function init() {
+    statTotal.textContent = TOTAL_QUESTIONS.toString();
+    updateStartControls();
+    drawClock(12, 0); // neutrale Startuhr
+  })();
+</script>
+</body>
+</html>
