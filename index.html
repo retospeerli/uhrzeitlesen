@@ -548,7 +548,6 @@
 
     while (options.length < count) {
       const t = randomTimeForOptions(selectedGrade, selectedDifficulty);
-      // gleiche Regeln wie bei Aufgaben
       const text = timeToText(t.h, t.m);
       if (text === question.correctText) continue;
       if (options.includes(text)) continue;
@@ -658,9 +657,12 @@
     let phrase = '';
 
     switch (minute) {
-      case 0:
-        phrase = `${hourWord} uhr`;
+      case 0: {
+        // Spezialfall: 1:00 = "Ein Uhr" (ohne s)
+        const baseHour = (h === 1) ? 'ein' : hourWord;
+        phrase = `${baseHour} Uhr`;
         break;
+      }
       case 5:
         phrase = `fünf nach ${hourWord}`;
         break;
@@ -694,10 +696,12 @@
       case 55:
         phrase = `fünf vor ${nextHourWord}`;
         break;
-      default:
-        // sollte kaum vorkommen, Sicherheitsfallback:
-        phrase = `${hourWord} uhr`;
+      default: {
+        // Fallback: Minuten nicht vorgesehen → auf "… Uhr" zurückfallen
+        const baseHour = (h === 1) ? 'ein' : hourWord;
+        phrase = `${baseHour} Uhr`;
         break;
+      }
     }
 
     // ersten Buchstaben groß
