@@ -172,7 +172,7 @@
       font-weight: 500;
       cursor: pointer;
       text-align: center;
-      transition: background 0.15s ease, transform 0.05s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: background 0.15s ease, transform 0.05s ease, border-color 0.15s.ease, box-shadow 0.15s ease;
       word-wrap: break-word;
     }
     .option-btn:hover {
@@ -385,15 +385,23 @@
     startScreen.classList.remove('hidden');
   });
 
+  // <<< NEU: LearningView-Rückmeldung beim Klick auf "Fertig" >>>
   finishBtn.addEventListener('click', () => {
+    // Optional: Button visuell deaktivieren, damit nicht mehrfach geklickt wird
+    finishBtn.disabled = true;
+    finishBtn.textContent = 'Erledigt ✔';
+
+    // LearningView: eingebettete App meldet Abschluss
     try {
       if (window.parent && window.parent !== window) {
+        // Standard-Nachricht, die LearningView erwartet
         window.parent.postMessage('AppSolved', '*');
       }
     } catch (e) {
-      console.warn('postMessage AppSolved nicht möglich:', e);
+      console.warn('LearningView-Rückmeldung nicht möglich:', e);
     }
   });
+  // <<< ENDE NEU >>>
 
   function startTraining() {
     if (!selectedGrade || !selectedDifficulty) return;
@@ -697,14 +705,12 @@
         phrase = `fünf vor ${nextHourWord}`;
         break;
       default: {
-        // Fallback: Minuten nicht vorgesehen → auf "… Uhr" zurückfallen
         const baseHour = (h === 1) ? 'ein' : hourWord;
         phrase = `${baseHour} Uhr`;
         break;
       }
     }
 
-    // ersten Buchstaben groß
     return phrase.charAt(0).toUpperCase() + phrase.slice(1);
   }
 
